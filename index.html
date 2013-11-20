@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hungman</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Hungman</h1>
+
+        <h4>An extension of your brain that helps you play Hangman.</h4>
+
+        <p>Input underscores for unknown letters.</p>
+
+        <label for="game-state">Game state:</label>
+        <input id="game-state" type="text"><br>
+
+        <label for="tried-letters">Tried letters:</label>
+        <input id="tried-letters" type="text"><br>
+
+        <div>
+            <span class="try-letters" id="try-letters"></span>
+        </div>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="dictionary.js"></script>
+    <script src="hungman.js"></script>
+</body>
+</html>
