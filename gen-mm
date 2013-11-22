@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use JSON;
+
+my %next;
+
+while (<>) {
+    chomp;
+    tr/A-Z/a-z/;
+    s/[^a-z ]//g;
+
+    my @words = split /\s/;
+    for my $word (@words) {
+        my @chars = split //, $word;
+
+        my $state = '$';
+        for my $c (@chars) {
+            $next{$state}{$c}++;
+            $state = $c;
+        }
+        $next{$state}{'$'}++;
+    }
+}
+
+for my $c (keys %next) {
+    my $count = 0.0;
+
+    for my $v (keys %{ $next{$c} }) {
+        $count += $next{$c}{$v};
+    }
+
+    for my $v (keys %{ $next{$c} }) {
+        $next{$c}{$v} /= $count;
+    }
+}
+
+print "var markov=", encode_json(\%next), ";\n";
