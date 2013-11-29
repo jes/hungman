@@ -113,7 +113,8 @@
         for (var i = 0; i < letters.length; i++) {
             out += '<b>' + letters[i] + '</b>';
             for (var j = 0; j < words[letters[i]].length; j++)
-                out += ' ' + words[letters[i]][j];
+                if (j == 0 || words[letters[i]][j] != words[letters[i]][j-1])
+                    out += ' ' + words[letters[i]][j];
             out += '<br>';
         }
 
