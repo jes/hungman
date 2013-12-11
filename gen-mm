@@ -7,6 +7,12 @@ use JSON;
 
 my %next;
 
+for my $c1 ('a' .. 'z') {
+    for my $c2 ('a' .. 'z') {
+        $next{$c1}{$c2} = 0;
+    }
+}
+
 while (<>) {
     chomp;
     tr/A-Z/a-z/;
@@ -33,7 +39,7 @@ for my $c (keys %next) {
     }
 
     for my $v (keys %{ $next{$c} }) {
-        $next{$c}{$v} /= $count;
+        $next{$c}{$v} = ($next{$c}{$v} + 1) / ($count + 2);
     }
 }
 
