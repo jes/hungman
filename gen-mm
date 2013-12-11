@@ -35,11 +35,11 @@ for my $c (keys %next) {
     my $count = 0.0;
 
     for my $v (keys %{ $next{$c} }) {
-        $count += $next{$c}{$v};
+        $count += $next{$c}{$v} + 1;
     }
 
     for my $v (keys %{ $next{$c} }) {
-        $next{$c}{$v} = ($next{$c}{$v} + 1) / ($count + 2);
+        $next{$c}{$v} = ($next{$c}{$v} + 1) / $count;
     }
 }
 
