@@ -75,7 +75,7 @@
 
         var out = '';
         for (var i = 0; i < letters.length; i++) {
-            out += '<b>' + letters[i] + '(' + score[letters[i]] + ')' + '</b>';
+            out += '<b>' + letters[i] + '</b>';
             if (i < letters.length-1)
                 out += ', ';
         }
