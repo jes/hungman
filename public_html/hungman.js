@@ -14,33 +14,56 @@
         for (var i = 0; i < triedletters.length; i++)
             tried[triedletters.charAt(i)] = true;
 
+        var ntried = 0;
+        for (var c in tried)
+            ntried++;
+
         var score = {};
 
-        var lastchar = '$';
-        for (var i = 0; i < gamestate.length; i++) {
-            var nextchar = '$';
-            if (i < gamestate.length-1)
-                nextchar = gamestate[i+1];
+        gamestate = '$$' + gamestate + '$$';
+        for (var i = 2; i < gamestate.length; i++) {
+            for (var j = 0; j < 26; j++) {
+                var c1 = String.fromCharCode('a'.charCodeAt(0) + j);
 
-            if (gamestate[i] == '_' && lastchar != '_') {
-                for (var j = 0; j < 26; j++) {
-                    var c = String.fromCharCode('a'.charCodeAt(0) + j);
-                    if (tried[c])
+                if (gamestate[i-2] != '_' && c1 != gamestate[i-2])
+                    c1 = gamestate[i-2];
+                if (gamestate[i-2] == '_' && tried[c1])
+                    continue;
+
+                for (var k = 0; k < 26; k++) {
+                    var c2 = String.fromCharCode('a'.charCodeAt(0) + k);
+
+                    if (gamestate[i-1] != '_' && c2 != gamestate[i-1])
+                        c2 = gamestate[i-1];
+                    if (gamestate[i-1] == '_' && tried[c2])
                         continue;
 
-                    if (!score[c])
-                        score[c] = 0;
+                    for (var l = 0; l < 26; l++) {
+                        var c3 = String.fromCharCode('a'.charCodeAt(0) + l);
 
-                    if (markov[lastchar][c]) {
-                        if (nextchar != '_' && markov[c][nextchar])
-                            score[c] += markov[lastchar][c] * markov[c][nextchar];
-                        else if (nextchar == '_')
-                            score[c] += markov[lastchar][c] * 0.1;
+                        if (gamestate[i] != '_' && c3 != gamestate[i])
+                            c3 = gamestate[i];
+                        if (gamestate[i] == '_' && tried[c3])
+                            continue;
+
+                        if (!tried[c1] && c1 != '$') {
+                            if (!score[c1])
+                                score[c1] = 0;
+                            score[c1] += Math.log(markov[c1][c2][c3]);
+                        }
+                        if (!tried[c2] && c2 != '$') {
+                            if (!score[c2])
+                                score[c2] = 0;
+                            score[c2] += Math.log(markov[c1][c2][c3]);
+                        }
+                        if (!tried[c3] && c3 != '$') {
+                            if (!score[c3])
+                                score[c3] = 0;
+                            score[c3] += Math.log(markov[c1][c2][c3]);
+                        }
                     }
                 }
             }
-
-            lastchar = gamestate[i];
         }
 
         var letters = [];
@@ -52,7 +75,7 @@
 
         var out = '';
         for (var i = 0; i < letters.length; i++) {
-            out += '<b>' + letters[i] + '</b>';
+            out += '<b>' + letters[i] + '(' + score[letters[i]] + ')' + '</b>';
             if (i < letters.length-1)
                 out += ', ';
         }

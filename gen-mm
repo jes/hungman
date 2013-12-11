@@ -7,9 +7,11 @@ use JSON;
 
 my %next;
 
-for my $c1 ('a' .. 'z') {
-    for my $c2 ('a' .. 'z') {
-        $next{$c1}{$c2} = 0;
+for my $c1 ('a' .. 'z', '$') {
+    for my $c2 ('a' .. 'z', '$') {
+        for my $c3 ('a' .. 'z', '$') {
+            $next{$c1}{$c2}{$c3} = 0;
+        }
     }
 }
 
@@ -22,24 +24,29 @@ while (<>) {
     for my $word (@words) {
         my @chars = split //, $word;
 
-        my $state = '$';
+        my $state1 = '$';
+        my $state2 = '$';
         for my $c (@chars) {
-            $next{$state}{$c}++;
-            $state = $c;
+            $next{$state1}{$state2}{$c}++;
+            $state1 = $state2;
+            $state2 = $c;
         }
-        $next{$state}{'$'}++;
+        $next{$state1}{$state2}{'$'}++;
+        $next{$state2}{'$'}{'$'}++;
     }
 }
 
 for my $c (keys %next) {
-    my $count = 0.0;
+    for my $c1 (keys %{ $next{$c} }) {
+        my $count = 0.0;
 
-    for my $v (keys %{ $next{$c} }) {
-        $count += $next{$c}{$v} + 1;
-    }
+        for my $v (keys %{ $next{$c}{$c1} }) {
+            $count += $next{$c}{$c1}{$v} + 1;
+        }
 
-    for my $v (keys %{ $next{$c} }) {
-        $next{$c}{$v} = ($next{$c}{$v} + 1) / $count;
+        for my $v (keys %{ $next{$c}{$c1} }) {
+            $next{$c}{$c1}{$v} = ($next{$c}{$c1}{$v} + 1) / $count;
+        }
     }
 }
 
