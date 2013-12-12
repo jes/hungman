@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $score = 0;
+
+while (<>) {
+    chomp;
+    my ($word, $fail) = split /\t/;
+
+    $score += length $fail;
+}
+
+print "$score\n";

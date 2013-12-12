@@ -1,0 +1,107 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use File::Slurp;
+use JSON;
+
+my $json = read_file("public_html/markov-model.js");
+$json =~ s/^var markov=//;
+$json =~ s/;$//;
+
+my $markov = from_json($json);
+
+while (my $word = <>) {
+    chomp $word;
+
+    my $state = '_' x length $word;
+    my $tried = '';
+
+    while ($state =~ /_/) {
+        my $c = suggest_letter($state, $tried);
+
+        if ($word =~ /$c/) {
+            $state = apply_letter($c, $state, $word);
+        } else {
+            $tried .= $c;
+        }
+    }
+
+    print "$word\t$tried\n";
+}
+
+sub suggest_letter {
+    my ($state, $triedstr) = @_;
+
+    $state = lc $state;
+    $triedstr = lc $triedstr;
+
+    my %tried;
+    $tried{$_} = 1 for split //, "$state$triedstr";
+
+    my %score;
+
+    $state = "\$\$$state\$\$";
+    my @gamestate = split //, $state;
+
+    for my $i (2 .. $#gamestate) {
+        C1:
+        for my $c1 ('a' .. 'z') {
+            if ($gamestate[$i-2] ne '_' && $c1 ne $gamestate[$i-2]) {
+                $c1 = $gamestate[$i-2];
+            }
+            if ($gamestate[$i-2] eq '_' && $tried{$c1}) {
+                next C1;
+            }
+
+            C2:
+            for my $c2 ('a' .. 'z') {
+                if ($gamestate[$i-1] ne '_' && $c2 ne $gamestate[$i-1]) {
+                    $c2 = $gamestate[$i-1];
+                }
+                if ($gamestate[$i-1] eq '_' && $tried{$c2}) {
+                    next C2;
+                }
+
+                C3:
+                for my $c3 ('a' .. 'z') {
+                    if ($gamestate[$i] ne '_' && $c3 ne $gamestate[$i]) {
+                        $c3 = $gamestate[$i];
+                    }
+                    if ($gamestate[$i] eq '_' && $tried{$c3}) {
+                        next C3;
+                    }
+
+                    if (!$tried{$c1} && $c1 ne '$') {
+                        $score{$c1} = ($score{$c1}||0) + log($markov->{$c1}{$c2}{$c3});
+                    }
+                    if (!$tried{$c2} && $c2 ne '$') {
+                        $score{$c2} = ($score{$c2}||0) + log($markov->{$c1}{$c2}{$c3});
+                    }
+                    if (!$tried{$c3} && $c3 ne '$') {
+                        $score{$c3} = ($score{$c3}||0) + log($markov->{$c1}{$c2}{$c3});
+                    }
+                }
+            }
+        }
+    }
+
+    my @letters = sort { $score{$b} <=> $score{$a} } keys %score;
+    return $letters[0];
+}
+
+sub apply_letter {
+    my ($c, $strstate, $strword) = @_;
+
+    die "wrong lengths" if length $strstate != length $strword;
+
+    my @state = split //, $strstate;
+    my @word = split //, $strword;
+
+    for my $i (0 .. $#state) {
+        $state[$i] = $c if $word[$i] eq $c;
+    }
+
+    return join '', @state;
+}
