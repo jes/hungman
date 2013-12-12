@@ -14,10 +14,6 @@
         for (var i = 0; i < triedletters.length; i++)
             tried[triedletters.charAt(i)] = true;
 
-        var ntried = 0;
-        for (var c in tried)
-            ntried++;
-
         var score = {};
 
         gamestate = '$$' + gamestate + '$$';
