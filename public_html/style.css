@@ -7,3 +7,13 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
+#game-state {
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+#tried-letters {
+    font-family: monospace;
+    letter-spacing: 1px;
+}
