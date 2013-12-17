@@ -1,0 +1,19 @@
+.smallcaps {
+    font-variant: small-caps;
+}
+
+.word-letter {
+    font-family: monospace;
+    font-size: 1.8em;
+    display: inline-block;
+    margin: 5px;
+    border: solid black 3px;
+}
+
+.selected-letter {
+    border: solid white 3px;
+}
+
+.big-letter {
+    font-size: 2.8em;
+}

@@ -1,12 +1,19 @@
 (function() {
+    var numletters = -1;
+    var lastsuggestion = 'A';
+
     var refresh = function() {
-        refresh_dict();
+        //refresh_dict();
         refresh_markov();
     };
 
     var refresh_markov = function() {
-        var gamestate = $('#game-state').val().toLowerCase();
-        var triedletters = $('#tried-letters').val().toLowerCase();
+        var gamestate = '';
+        for (var i = 0; i < numletters; i++) {
+            gamestate += $('#word-letter-' + i).html().toLowerCase();
+        }
+
+        var triedletters = $('#wrong-letter-values').val().toLowerCase();
 
         var tried = {};
         for (var i = 0; i < gamestate.length; i++)
@@ -70,13 +77,19 @@
         });
 
         var out = '';
-        for (var i = 0; i < letters.length; i++) {
-            out += '<b>' + letters[i] + '</b>';
-            if (i < letters.length-1)
-                out += ', ';
+        if (letters.length > 0) {
+            lastsuggestion = letters[0].toUpperCase();
+            out = '<span class="big-letter">' + letters[0].toUpperCase() + '</span><br>';
+            for (var i = 1; i < letters.length; i++) {
+                out += '<b>' + letters[i].toUpperCase() + '</b>';
+                if (i < letters.length-1)
+                    out += ' ';
+            }
         }
 
-        $('#markov-output').html(out);
+        $('#suggestion-value').html(out);
+
+        console.log(out);
     };
 
     var refresh_dict = function() {
@@ -137,11 +150,83 @@
             out += '<br>';
         }
 
-        $('#try-letters').html(out);
+        console.log(out);
     };
 
-    $('#game-state').on('input', refresh);
-    $('#tried-letters').on('input', refresh);
+    var isnum = function(x) {
+        return !isNaN(parseFloat(x)) && isFinite(x);
+    };
+
+    var begin = function() {
+        numletters = $('#num-letters').val();
+
+        if (isnum(numletters)) {
+            $('#num-letters-div').hide();
+            $('#game').show();
+
+            /* populate #letter-inputs */
+            var html = '';
+            for (var i = 0; i < numletters; i++) {
+                html += '<div id="word-letter-' + i + '" class="label word-letter">_</div>';
+            }
+            $('#letter-inputs').html(html);
+            selectedletter = 0;
+            $('#word-letter-0').addClass('selected-letter');
+
+            /* clear #wrong-letter-values */
+            $('#wrong-letter-values').html('');
+
+            refresh();
+        } else {
+            $('#num-letters-div').show();
+            $('#game').hide();
+            alert("Not is num");
+        }
+
+        return false;
+    };
+
+    $('#letters-form').on('submit', begin);
+
+    $('#game').hide();
+
+    $(document).keydown(function(e) {
+        if (e.which == 39 || e.which == 37) /* right, left */
+            $('#word-letter-' + selectedletter).removeClass('selected-letter');
+
+        if (e.which == 39) { /* right */
+            selectedletter++;
+        } else if (e.which == 37) { /* left */
+            selectedletter--;
+        } else if (e.which == 40) { /* down */
+            $('#wrong-letter-values').val($('#wrong-letter-values').val() + lastsuggestion);
+            refresh();
+        } else if (e.which == 38) { /* up */
+            var wrongs = $('#wrong-letter-values').val();
+            wrongs = wrongs.substring(0, wrongs.length-1);
+            $('#wrong-letter-values').val(wrongs);
+            refresh();
+        } else if (e.which >= 65 && e.which <= 90) { /* letter */
+            $('#word-letter-' + selectedletter).html(String.fromCharCode(e.which));
+            refresh();
+        } else if (e.which == 32 || e.which == 189 || e.which == 27) { /* space, underscore, esc */
+            $('#word-letter-' + selectedletter).html('_');
+            refresh();
+        } else {
+            console.log(e.which);
+            return true;
+        }
+
+        if (e.which == 39 || e.which == 37) { /* right, left */
+            if (selectedletter < 0)
+                selectedletter = numletters-1;
+            else if (selectedletter >= numletters)
+                selectedletter = 0;
+            $('#word-letter-' + selectedletter).addClass('selected-letter');
+        }
+
+        return false;
+    });
 
     refresh();
 })();

@@ -1,27 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Hungman</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hangman Solver</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+
+    <!--[if lt IE 9]>
+      <script src="/js/html5shiv.js"></script>
+      <script src="/js/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body>
     <div class="container">
-        <h1>Hungman</h1>
+        <h1>Hangman Solver</h1>
 
-        <h4>An extension of your brain that helps you play Hangman.</h4>
+        <h4>Interactive hangman solver.</h1>
 
-        <p>Input underscores for unknown letters.</p>
+        <div id="num-letters-div">
+            <div class="row">
+                <form id="letters-form">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6">
+                        <label class="control-label" for="num-letters">Number of letters:</label>
+                        <input autocomplete="off" class="form-control" name="num-letters" id="num-letters">
+                        <button style="margin-top: 3px" class="btn btn-lg btn-primary" type="submit">Begin &raquo;</button>
+                    </div>
+                    <div class="col-md-3"></div>
+                </form>
+            </div>
+        </div>
 
-        <label for="game-state">Game state:</label>
-        <input id="game-state" type="text"><br>
+        <div id="game">
+            <div class="row">
+                <div class="col-md-12" style="background-color: red">
+                    <div id="letters">
+                        <span class="smallcaps">Word</span>
+                        <div id="letter-inputs"><!-- built at runtime --></div>
+                    </div>
+                </div>
+            </div>
 
-        <label for="tried-letters">Tried letters:</label>
-        <input id="tried-letters" type="text"><br>
-
-        <div>
-            <span class="markov-output" id="markov-output"></span>
-            <br>
-            <span class="try-letters" id="try-letters"></span>
+            <div class="row">
+                <div class="col-md-4" style="background-color: green">
+                    <div id="wrong-letters">
+                        <span class="smallcaps">Wrong letters</span>
+                        <input id="wrong-letter-values" class="form-control"></div>
+                    </div>
+                </div>
+                <div class="col-md-4" style="background-color: blue">
+                    <div id="suggestion">
+                        <span class="smallcaps">Suggestion</span>
+                        <span id="suggestion-value"></span>
+                    </div>
+                </div>
+                <div class="col-md-4" style="background-color: yellow">
+                    <div id="instructions">
+                        <span class="smallcaps">Instructions</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
