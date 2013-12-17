@@ -25,6 +25,11 @@
 
         gamestate = '$$' + gamestate + '$$';
         for (var i = 2; i < gamestate.length; i++) {
+            if ((gamestate.charCodeAt(i) < 'a'.charCodeAt(0) ||
+                    gamestate.charCodeAt(i) > 'z'.charCodeAt(0)) &&
+                    gamestate.charAt(i) != '$' && gamestate.charAt(i) != '_')
+                continue;
+
             for (var j = 0; j < 26; j++) {
                 var c1 = String.fromCharCode('a'.charCodeAt(0) + j);
 
