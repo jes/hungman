@@ -1,6 +1,7 @@
 (function() {
     var numletters = -1;
     var lastsuggestion = 'A';
+    var selectedletter = 0;
 
     var refresh = function() {
         //refresh_dict();
@@ -211,10 +212,10 @@
             wrongs = wrongs.substring(0, wrongs.length-1);
             $('#wrong-letter-values').val(wrongs);
             refresh();
-        } else if (e.which >= 65 && e.which <= 90) { /* letter */
+        } else if (e.which >= 65 && e.which <= 90 && !$('#wrong-letter-values').is(':focus')) { /* letter */
             $('#word-letter-' + selectedletter).html(String.fromCharCode(e.which));
             refresh();
-        } else if (e.which == 32 || e.which == 189 || e.which == 27) { /* space, underscore, esc */
+        } else if ((e.which == 32 || e.which == 189 || e.which == 27) && !$('#wrong-letter-values').is(':focus')) { /* space, underscore, esc */
             $('#word-letter-' + selectedletter).html('_');
             refresh();
         } else {
